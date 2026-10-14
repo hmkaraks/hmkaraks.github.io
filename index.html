@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yıldız Halı Saha – Online Randevu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--turf:#1e5b3a;--turf-d:#143f28;--chalk:#eef2ea;--paper:#fbfcf8;--lamp:#f4b63f;--clay:#b8553f;--ink:#17261d;--mut:#5d6b61;--bd:#cdd8c9}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{font-family:Barlow,system-ui,sans-serif;background:var(--chalk);color:var(--ink);line-height:1.5;font-size:17px}
+h1,h2,.num{font-family:"Barlow Condensed",Impact,sans-serif}
+:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+button{font:inherit;cursor:pointer}
+
+/* hero: biçilmiş çim şeritleri + orta çember */
+.hero{position:relative;overflow:hidden;color:var(--paper);padding:56px 20px 72px;
+ background:repeating-linear-gradient(90deg,var(--turf) 0 56px,#236a43 56px 112px)}
+.hero::after{content:"";position:absolute;right:-90px;top:50%;width:340px;height:340px;margin-top:-170px;
+ border:4px solid rgba(251,252,248,.35);border-radius:50%}
+.hero::before{content:"";position:absolute;right:79px;top:0;bottom:0;width:4px;background:rgba(251,252,248,.35)}
+.wrap{max-width:980px;margin:0 auto;position:relative;z-index:1}
+.brand{font-weight:600;font-size:18px;opacity:.9}
+h1{font-size:clamp(46px,9vw,92px);line-height:.95;font-weight:800;margin:18px 0 16px;max-width:11ch}
+.hero p{max-width:34ch;font-size:19px}
+.facts{display:flex;flex-wrap:wrap;gap:10px 28px;margin-top:28px;font-weight:500}
+.facts b{color:var(--lamp);font-weight:600}
+.cta{display:inline-block;margin-top:30px;background:var(--lamp);color:var(--ink);text-decoration:none;font-weight:600;padding:13px 26px;border-radius:6px}
+
+main{max-width:980px;margin:-36px auto 0;padding:0 16px 56px;position:relative;z-index:2}
+.card{background:var(--paper);border:1px solid var(--bd);border-radius:10px;padding:24px 22px;margin-bottom:16px}
+.card h2{font-size:28px;font-weight:800;margin-bottom:4px}
+.hint{color:var(--mut);font-size:15px;margin-bottom:14px}
+
+.days{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}
+.day{flex:0 0 auto;min-width:68px;padding:8px 6px;text-align:center;background:var(--chalk);border:1px solid var(--bd);border-radius:8px;color:var(--ink)}
+.day .num{display:block;font-size:30px;font-weight:800;line-height:1}
+.day small{display:block;font-size:13px;color:var(--mut)}
+.day[aria-pressed=true]{background:var(--turf);border-color:var(--turf);color:var(--paper)}
+.day[aria-pressed=true] small{color:#cfe3d5}
+
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{padding:9px 20px;border-radius:999px;border:1.5px solid var(--turf);background:transparent;color:var(--turf);font-weight:600}
+.tab[aria-pressed=true]{background:var(--turf);color:var(--paper)}
+
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px}
+.slot{padding:10px 6px;border-radius:8px;border:1.5px solid var(--bd);background:var(--paper);text-align:center;color:var(--ink)}
+.slot .num{display:block;font-size:28px;font-weight:800;line-height:1.05}
+.slot small{font-size:13px;color:var(--mut)}
+.slot:hover:not(:disabled){border-color:var(--turf)}
+.slot[aria-pressed=true]{background:var(--lamp);border-color:var(--lamp)}
+.slot[aria-pressed=true] small{color:var(--ink)}
+.slot:disabled{cursor:not-allowed;background:repeating-linear-gradient(135deg,#f1ebe7 0 8px,#f7f1ed 8px 16px);border-color:#e4d3cb;color:#a99088}
+.slot:disabled .num{text-decoration:line-through}
+.slot.dolu small{color:var(--clay);font-weight:600}
+
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.row{grid-template-columns:1fr}.hero::after,.hero::before{opacity:.4}}
+label{display:block;font-weight:600;font-size:15px;margin-bottom:4px}
+input{width:100%;font:inherit;padding:11px 12px;border:1.5px solid var(--bd);border-radius:8px;background:#fff;color:var(--ink)}
+input:focus{border-color:var(--turf)}
+.sum{margin-top:18px;padding:14px 16px;background:var(--chalk);border-radius:8px;border-left:5px solid var(--turf)}
+.sum .num{font-size:30px;font-weight:800}
+.err{color:var(--clay);font-weight:600;min-height:24px;margin-top:10px}
+.send{width:100%;margin-top:6px;padding:15px;border:0;border-radius:8px;background:#1f9d55;color:#fff;font-weight:600;font-size:18px}
+.send:hover{background:#17844a}
+.note{margin-top:10px;color:var(--mut);font-size:14px}
+footer{text-align:center;color:var(--mut);font-size:14px;padding:0 16px 36px}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="brand" id="brand"></div>
+    <h1>Maç saatini şimdi ayır.</h1>
+    <p>Günü, sahayı ve saati seç. Talebin tek dokunuşla WhatsApp'tan bize ulaşsın.</p>
+    <div class="facts" id="facts"></div>
+    <a class="cta" href="#randevu">Randevu al</a>
+  </div>
+</header>
+
+<main id="randevu">
+  <section class="card">
+    <h2>1. Gün seç</h2>
+    <div class="days" id="days" role="group" aria-label="Gün seçimi"></div>
+  </section>
+
+  <section class="card">
+    <h2>2. Saha seç</h2>
+    <div class="tabs" id="tabs" role="group" aria-label="Saha seçimi"></div>
+  </section>
+
+  <section class="card">
+    <h2>3. Saat seç</h2>
+    <p class="hint">Birden fazla saat seçebilirsin. Üstü çizili saatler dolu.</p>
+    <div class="slots" id="slots"></div>
+  </section>
+
+  <section class="card">
+    <h2>4. Bilgilerin</h2>
+    <div class="row">
+      <div><label for="ad">Ad soyad</label><input id="ad" autocomplete="name"></div>
+      <div><label for="tel">Telefon</label><input id="tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="05xx xxx xx xx"></div>
+    </div>
+    <div class="sum" id="sum" aria-live="polite"></div>
+    <div class="err" id="err" role="alert"></div>
+    <button class="send" id="send">WhatsApp ile randevu iste</button>
+    <p class="note">Randevun, işletme onayladıktan sonra kesinleşir.</p>
+  </section>
+</main>
+
+<footer id="foot"></footer>
+
+<script>
+/* ====== BURAYI KENDİNE GÖRE DÜZENLE ====== */
+const CONFIG = {
+  ad: "Yıldız Halı Saha",
+  whatsapp: "905551112233",          // başında + olmadan, ülke koduyla
+  adres: "Örnek Mah. Spor Cad. No:1",
+  acilis: 10,                         // ilk maç saati
+  kapanis: 24,                        // son maç 23:00'te başlar (24 = gece yarısı)
+  fiyatGunduz: 900,                   // TL / saat
+  fiyatAksam: 1300,                   // TL / saat
+  aksamBaslangic: 18,                 // bu saatten sonra akşam fiyatı
+  sahalar: ["Saha 1", "Saha 2"],
+  gunSayisi: 14,                      // kaç gün ilerisi için randevu
+  /* Dolu saatler: tarih → saha → saatler. Her randevu onayladığında buraya ekle. */
+  dolu: {
+    "2026-10-15": { "Saha 1": ["20:00", "21:00"], "Saha 2": ["19:00"] },
+    "2026-10-16": { "Saha 1": ["21:00", "22:00"] }
+  }
+};
+/* ========================================= */
+
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2, "0");
+const key = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const tl = n => n.toLocaleString("tr-TR") + " ₺";
+const price = h => h >= CONFIG.aksamBaslangic ? CONFIG.fiyatAksam : CONFIG.fiyatGunduz;
+const hh = h => pad(h % 24) + ":00";
+
+const today = new Date();
+const dates = Array.from({length: CONFIG.gunSayisi}, (_, i) => { const d = new Date(today); d.setDate(d.getDate()+i); return d; });
+const state = { date: dates[0], saha: CONFIG.sahalar[0], hours: new Set() };
+
+$("brand").textContent = CONFIG.ad;
+$("facts").innerHTML =
+  `<span><b>Saatler</b> ${hh(CONFIG.acilis)} – ${hh(CONFIG.kapanis)}</span>` +
+  `<span><b>Fiyat</b> ${tl(CONFIG.fiyatGunduz)} / saat, ${CONFIG.aksamBaslangic}:00 sonrası ${tl(CONFIG.fiyatAksam)}</span>` +
+  `<span><b>Adres</b> ${CONFIG.adres}</span>`;
+$("foot").textContent = `${CONFIG.ad} · ${CONFIG.adres}`;
+document.title = `${CONFIG.ad} – Online Randevu`;
+
+try { $("ad").value = localStorage.getItem("hs_ad") || ""; $("tel").value = localStorage.getItem("hs_tel") || ""; } catch(e){}
+
+function renderDays(){
+  $("days").innerHTML = "";
+  dates.forEach(d => {
+    const b = document.createElement("button");
+    b.className = "day";
+    b.setAttribute("aria-pressed", key(d) === key(state.date));
+    b.innerHTML = `<small>${d.toLocaleDateString("tr-TR",{weekday:"short"})}</small><span class="num">${d.getDate()}</span><small>${d.toLocaleDateString("tr-TR",{month:"short"})}</small>`;
+    b.onclick = () => { state.date = d; state.hours.clear(); render(); };
+    $("days").appendChild(b);
+  });
+}
+function renderTabs(){
+  $("tabs").innerHTML = "";
+  CONFIG.sahalar.forEach(s => {
+    const b = document.createElement("button");
+    b.className = "tab"; b.textContent = s;
+    b.setAttribute("aria-pressed", s === state.saha);
+    b.onclick = () => { state.saha = s; state.hours.clear(); render(); };
+    $("tabs").appendChild(b);
+  });
+}
+function isBooked(h){
+  const list = ((CONFIG.dolu[key(state.date)] || {})[state.saha]) || [];
+  return list.includes(hh(h));
+}
+function isPast(h){
+  return key(state.date) === key(today) && h <= today.getHours();
+}
+function renderSlots(){
+  $("slots").innerHTML = "";
+  for(let h = CONFIG.acilis; h < CONFIG.kapanis; h++){
+    const booked = isBooked(h), past = isPast(h);
+    const b = document.createElement("button");
+    b.className = "slot" + (booked ? " dolu" : "");
+    b.disabled = booked || past;
+    b.setAttribute("aria-pressed", state.hours.has(h));
+    b.innerHTML = `<span class="num">${hh(h)}</span><small>${booked ? "Dolu" : past ? "Geçti" : tl(price(h))}</small>`;
+    b.onclick = () => { state.hours.has(h) ? state.hours.delete(h) : state.hours.add(h); render(); };
+    $("slots").appendChild(b);
+  }
+}
+function selected(){ return [...state.hours].sort((a,b)=>a-b); }
+function dateText(){ return state.date.toLocaleDateString("tr-TR",{day:"numeric",month:"long",weekday:"long"}); }
+function renderSum(){
+  const hs = selected();
+  if(!hs.length){ $("sum").innerHTML = "Henüz saat seçmedin."; return; }
+  const total = hs.reduce((t,h)=>t+price(h),0);
+  $("sum").innerHTML = `${dateText()} · ${state.saha}<br>${hs.map(hh).join(", ")}<br><span class="num">${tl(total)}</span>`;
+}
+function render(){ renderDays(); renderTabs(); renderSlots(); renderSum(); $("err").textContent = ""; }
+
+$("send").onclick = () => {
+  const ad = $("ad").value.trim(), tel = $("tel").value.trim(), hs = selected();
+  if(!hs.length) return $("err").textContent = "Önce en az bir saat seç.";
+  if(ad.length < 3) return $("err").textContent = "Ad soyadını yaz.";
+  if(tel.replace(/\D/g,"").length < 10) return $("err").textContent = "Geçerli bir telefon numarası yaz.";
+  try { localStorage.setItem("hs_ad", ad); localStorage.setItem("hs_tel", tel); } catch(e){}
+  const total = hs.reduce((t,h)=>t+price(h),0);
+  const msg = `Merhaba, randevu talebim var.\nAd: ${ad}\nTelefon: ${tel}\nTarih: ${dateText()}\nSaha: ${state.saha}\nSaat: ${hs.map(hh).join(", ")}\nToplam: ${tl(total)}`;
+  window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`, "_blank");
+};
+
+render();
+</script>
+</body>
+</html>
